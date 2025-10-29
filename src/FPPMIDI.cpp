@@ -57,7 +57,7 @@ public:
         compareType = v["conditionCompare"].asString();
         std::string text = v["conditionText"].asString();
         if (text != "") {
-            val = std::stoi(text, nullptr, 0);
+            val = std::atoi(text.c_str());
         } else {
             val = 0;
         }
