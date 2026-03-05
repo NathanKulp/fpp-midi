@@ -9,8 +9,10 @@ if (( DEBVER < 11 )); then
 apt-get -q -y --reinstall install librtmidi4
 elif (( DEBVER < 12 )); then
 apt-get -q -y --reinstall install librtmidi5
-else
+elif (( DEBVER < 13 )); then
 apt-get -q -y --reinstall install librtmidi6
+else
+apt-get -q -y --reinstall install librtmidi7
 fi
 apt-get clean
 apt-get download librtmidi-dev
@@ -23,8 +25,10 @@ if (( DEBVER < 11 )); then
 sed -i -e "s/Depends: \(.*\)/Depends: librtmidi4/g" deb/DEBIAN/control
 elif (( DEBVER < 12 )); then
 sed -i -e "s/Depends: \(.*\)/Depends: librtmidi5/g" deb/DEBIAN/control
-else 
+elif (( DEBVER < 13 )); then
 sed -i -e "s/Depends: \(.*\)/Depends: librtmidi6/g" deb/DEBIAN/control
+else 
+sed -i -e "s/Depends: \(.*\)/Depends: librtmidi7/g" deb/DEBIAN/control
 fi
 dpkg-deb -b deb ./librtmidi-dev.deb
 apt-get -y --reinstall --allow-change-held-packages install ./librtmidi-dev.deb
