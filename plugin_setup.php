@@ -88,7 +88,7 @@ function AddCondition(row, condition, compare, text) {
     c += AddOption('&gt;=', '&gt;=', compare);
     c += "</select>";
 
-    c += "<input type='text' size='12' maxlength='30' class='conditionText' value='" + text + "'>";
+    c += "<input type='text' size='12' maxlength='30' class='conditionText' value='" + text + "' placeholder='e.g. 144 or 0x90'>";
 
     c += "</td></tr>";
 
