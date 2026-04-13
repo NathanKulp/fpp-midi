@@ -356,35 +356,44 @@ public:
         write(eventFileWrite, &v, 8);
     }
 
+    std::string getMidiPath(const httpserver::http_request &req) {
+        std::vector<std::string> pieces = req.get_path_pieces();
+        if (pieces.size() > 1 && pieces[0] == "MIDI") {
+            return pieces[1];
+        }
+        if (pieces.size() > 3 && pieces[0] == "api" && pieces[1] == "plugin-apis" && pieces[2] == "MIDI") {
+            return pieces[3];
+        }
+        return std::string();
+    }
+
     virtual HTTP_RESPONSE_CONST std::shared_ptr<httpserver::http_response> render_GET(const httpserver::http_request &req) override {
-        if (req.get_path_pieces().size() > 1) {
-            std::string p1 = req.get_path_pieces()[1];
-            if (p1 == "Last") {
-                std::string v;
-                for (auto &a : lastEvents) {
-                    v += a.toString() + "\n";
-                }
-                return std::shared_ptr<httpserver::http_response>(new httpserver::string_response(v, 200));
-            } else if (p1 == "Devices") {
-                try {
-                    std::string v = "[";
-                    RtMidiIn *mi = new RtMidiIn();
-                    if (mi != nullptr) {
-                        unsigned int nPorts = mi->getPortCount();
-                        for (int x = 0; x < nPorts; x++) {
-                            std::string portName = mi->getPortName(x);
-                            if (v.size() != 1) {
-                                v += ", ";
-                            }
-                            v += "\"" + portName + "\"";
+        std::string p1 = getMidiPath(req);
+        if (p1 == "Last") {
+            std::string v;
+            for (auto &a : lastEvents) {
+                v += a.toString() + "\n";
+            }
+            return std::shared_ptr<httpserver::http_response>(new httpserver::string_response(v, 200));
+        } else if (p1 == "Devices") {
+            try {
+                std::string v = "[";
+                RtMidiIn *mi = new RtMidiIn();
+                if (mi != nullptr) {
+                    unsigned int nPorts = mi->getPortCount();
+                    for (int x = 0; x < nPorts; x++) {
+                        std::string portName = mi->getPortName(x);
+                        if (v.size() != 1) {
+                            v += ", ";
                         }
-                        delete mi;
+                        v += "\"" + portName + "\"";
                     }
-                    v += "]";
-                    return std::shared_ptr<httpserver::http_response>(new httpserver::string_response(v, 200, "application/json"));
-                } catch (...) {
-                    LogErr(VB_PLUGIN, "Could not initialize MIDI plugin for port %s\n", name.c_str());
+                    delete mi;
                 }
+                v += "]";
+                return std::shared_ptr<httpserver::http_response>(new httpserver::string_response(v, 200, "application/json"));
+            } catch (...) {
+                LogErr(VB_PLUGIN, "Could not initialize MIDI plugin for port %s\n", name.c_str());
             }
         }
         return std::shared_ptr<httpserver::http_response>(new httpserver::string_response("Not Found", 404));
@@ -418,6 +427,7 @@ public:
     }
     void registerApis(httpserver::webserver *m_ws) override {
         m_ws->register_resource("/MIDI", this, true);
+        m_ws->register_resource("/api/plugin-apis/MIDI", this, true);
     }
     virtual void addControlCallbacks(std::map<int, std::function<bool(int)>> &callbacks) override {
         callbacks[eventFileRead] = [this](int i) {
