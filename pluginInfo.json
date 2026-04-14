@@ -24,14 +24,14 @@
             "minFPPVersion": "7.0",
             "maxFPPVersion": "8.99",
             "branch": "master",
-            "sha": "",
+            "sha": "07e8b7e2afb75a8465b2125b96141203db75c7f0",
             "allowUpdates": 1
         },
         {
             "minFPPVersion": "9.0",
             "maxFPPVersion": "0",
             "branch": "master",
-            "sha": "",
+            "sha": "07e8b7e2afb75a8465b2125b96141203db75c7f0",
             "allowUpdates": 1
         },
         {
